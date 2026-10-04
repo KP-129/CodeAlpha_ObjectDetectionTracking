@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Object Detection & Tracking</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="brand">
+            <div class="brand-icon">◈</div>
+
+            <div>
+                <h1>VisionTrack</h1>
+                <span>Object Detection & Tracking</span>
+            </div>
+        </div>
+
+        <div class="status-area">
+
+            <span id="statusDot" class="status-dot"></span>
+
+            <span id="statusText">
+                Camera Offline
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <span class="eyebrow">
+                    AI COMPUTER VISION
+                </span>
+
+                <h2>
+                    Real-Time Object
+                    <span>Detection & Tracking</span>
+                </h2>
+
+                <p>
+                    Detect objects in real time using a pretrained
+                    YOLO11 model and maintain object identities using
+                    lightweight IoU-based tracking.
+                </p>
+
+                <div class="feature-list">
+
+                    <div class="feature">
+                        <span>✓</span>
+                        YOLO11 Detection
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Bounding Boxes
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Tracking IDs
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Live Webcam
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="camera-card">
+
+                <div class="camera-header">
+
+                    <div>
+                        <h3>Live Detection</h3>
+                        <p>Webcam stream</p>
+                    </div>
+
+                    <div class="live-indicator">
+                        <span></span>
+                        LIVE
+                    </div>
+
+                </div>
+
+
+                <div class="video-container">
+
+                    <div id="placeholder" class="placeholder">
+
+                        <div class="camera-symbol">
+                            ◉
+                        </div>
+
+                        <h3>
+                            Camera is ready
+                        </h3>
+
+                        <p>
+                            Click "Start Camera" to begin
+                            object detection.
+                        </p>
+
+                    </div>
+
+                    <img
+                        id="videoFeed"
+                        src=""
+                        alt="Live object detection feed"
+                    >
+
+                </div>
+
+
+                <div class="controls">
+
+                    <button
+                        id="startBtn"
+                        class="btn btn-primary"
+                        onclick="startCamera()"
+                    >
+                        <span>▶</span>
+                        Start Camera
+                    </button>
+
+                    <button
+                        id="stopBtn"
+                        class="btn btn-secondary"
+                        onclick="stopCamera()"
+                        disabled
+                    >
+                        <span>■</span>
+                        Stop Camera
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="info-grid">
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    ◉
+                </div>
+
+                <div>
+                    <h3>YOLO11</h3>
+
+                    <p>
+                        Pretrained neural network for fast
+                        real-time object detection.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    □
+                </div>
+
+                <div>
+                    <h3>Bounding Boxes</h3>
+
+                    <p>
+                        Detected objects are highlighted
+                        with labeled bounding boxes.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    #
+                </div>
+
+                <div>
+                    <h3>Object Tracking</h3>
+
+                    <p>
+                        IoU-based tracking maintains IDs
+                        across consecutive frames.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="technology">
+
+            <div>
+                <span class="eyebrow">
+                    TECHNOLOGY STACK
+                </span>
+
+                <h2>
+                    Built with practical
+                    computer vision tools
+                </h2>
+            </div>
+
+            <div class="tech-list">
+
+                <span>Python</span>
+                <span>Flask</span>
+                <span>OpenCV</span>
+                <span>YOLO11</span>
+                <span>NumPy</span>
+                <span>IoU Tracking</span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            Object Detection & Tracking
+            <span>•</span>
+            AI/ML Internship Project
+        </p>
+
+    </footer>
+
+
+    <script>
+
+        const videoFeed =
+            document.getElementById("videoFeed");
+
+        const placeholder =
+            document.getElementById("placeholder");
+
+        const startBtn =
+            document.getElementById("startBtn");
+
+        const stopBtn =
+            document.getElementById("stopBtn");
+
+        const statusText =
+            document.getElementById("statusText");
+
+        const statusDot =
+            document.getElementById("statusDot");
+
+
+        async function startCamera() {
+
+            startBtn.disabled = true;
+
+            startBtn.innerHTML =
+                "<span>...</span> Starting";
+
+
+            try {
+
+                const response =
+                    await fetch("/start");
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    throw new Error(data.message);
+
+                }
+
+
+                videoFeed.src =
+                    "/video_feed?" + Date.now();
+
+                videoFeed.style.display =
+                    "block";
+
+                placeholder.style.display =
+                    "none";
+
+
+                stopBtn.disabled = false;
+
+                statusText.textContent =
+                    "Camera Online";
+
+                statusDot.classList.add(
+                    "active"
+                );
+
+                startBtn.innerHTML =
+                    "<span>●</span> Camera Running";
+
+
+            } catch (error) {
+
+                alert(
+                    "Unable to start camera: "
+                    + error.message
+                );
+
+                startBtn.disabled = false;
+
+                startBtn.innerHTML =
+                    "<span>▶</span> Start Camera";
+            }
+        }
+
+
+        async function stopCamera() {
+
+            try {
+
+                await fetch("/stop");
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+
+            videoFeed.src = "";
+
+            videoFeed.style.display =
+                "none";
+
+            placeholder.style.display =
+                "flex";
+
+
+            startBtn.disabled = false;
+
+            stopBtn.disabled = true;
+
+
+            startBtn.innerHTML =
+                "<span>▶</span> Start Camera";
+
+            statusText.textContent =
+                "Camera Offline";
+
+            statusDot.classList.remove(
+                "active"
+            );
+        }
+
+
+        window.addEventListener(
+            "beforeunload",
+            function () {
+
+                navigator.sendBeacon("/stop");
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
